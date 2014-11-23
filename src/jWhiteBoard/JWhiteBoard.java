@@ -220,13 +220,13 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
      * Show help on Console screen
      */
     static void help() {
-        System.out.print("\nDraw [-help] [-no_channel] [-props <protocol stack definition>]" +
+        System.out.println("\nDraw [-help] [-no_channel] [-props <protocol stack definition>]" +
                 " [-clustername <name>] [-state] [-timeout <state timeout>] [-use_unicasts] " +
                 "[-bind_addr <addr>] [-jmx <true | false>] [-name <logical name>] [-send_own_state_on_merge true|false] " +
                              "[-uuid <UUID>]");
-        System.out.print("-no_channel: doesn't use JGroups at all, any drawing will be relected on the " +
+        System.out.println("-no_channel: doesn't use JGroups at all, any drawing will be relected on the " +
                 "whiteboard directly");
-        System.out.print("-props: argument can be an old-style protocol stack specification, or it can be " +
+        System.out.println("-props: argument can be an old-style protocol stack specification, or it can be " +
                 "a URL. In the latter case, the protocol specification will be read from the URL\n");
     }
 
