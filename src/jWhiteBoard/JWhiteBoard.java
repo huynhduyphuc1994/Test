@@ -291,6 +291,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
         mainFrame.setVisible(true);
         setTitle();
     }
+    //da thay doi -state
 
     /**
      * Set Frame's title
