@@ -472,6 +472,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
         mainFrame.setVisible(false);
         mainFrame.dispose();
     }
+    //loi zoom nam lam chung vs loi tin nhan
 
     /**
      * Send State (content on WhiteBoard) to all members of Group
