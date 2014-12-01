@@ -269,11 +269,11 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
         drawPanel.setBackground(backgroundColor);
         subPanel=new JPanel();
         mainFrame.getContentPane().add("Center", drawPanel);
-        clearButton=new JButton("Clearn");
+        clearButton=new JButton("Clear");//set to Clear not to Clean
         clearButton.setFont(defaultFont);
         clearButton.addActionListener(this);
         //set change name button
-        leaveButton=new JButton("Exit");
+        leaveButton=new JButton("Leave");//set to Leave not to Exit
         leaveButton.setFont(defaultFont);
         leaveButton.addActionListener(this);
         subPanel.add("South", clearButton);
