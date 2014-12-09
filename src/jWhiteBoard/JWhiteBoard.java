@@ -9,6 +9,7 @@ import org.jgroups.util.Util;
 
 import javax.management.MBeanServer;
 import javax.swing.*;
+
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
@@ -29,10 +30,10 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
     private JFrame                 mainFrame=null;
     private JPanel                 subPanel=null;
     private DrawPanel              drawPanel=null;
-    private JButton                clearButton, leaveButton;
+    private JButton                clearButton, leaveButton,brushcolor;
     private final Random           random=new Random(System.currentTimeMillis());
     private final Font             defaultFont=new Font("Helvetica",Font.PLAIN,12);
-    private final Color     		drawColor=selectColor();
+    private Color     		drawColor=selectColor();
     //private final Color            drawColor=Color.black;
     private static final Color     backgroundColor=Color.WHITE;//Color WHITE not lightGray
     boolean                        noChannel=false;
@@ -272,19 +273,37 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
         clearButton=new JButton("Clear");//set to Clear not to Clean
         clearButton.setFont(defaultFont);
         clearButton.addActionListener(this);
+        //Brush Color
+        brushcolor = new JButton("Brush Color");
+        brushcolor.setFont(defaultFont);
+        brushcolor.setForeground(Color.blue);
+        brushcolor.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				Color b = JColorChooser.showDialog(null, "Pick your color", drawColor);
+				if(b!=null){
+					drawColor = b;
+					
+				}
+				
+			}
+		});
         //set change name button
         leaveButton=new JButton("Leave");//set to Leave not to Exit
         leaveButton.setFont(defaultFont);
         leaveButton.addActionListener(this);
         subPanel.add("South", clearButton);
         subPanel.add("South", leaveButton);
+        subPanel.add("South",brushcolor);
         mainFrame.getContentPane().add("South", subPanel);
         mainFrame.setBackground(backgroundColor);
         clearButton.setForeground(Color.blue);
         leaveButton.setForeground(Color.blue);
         mainFrame.pack();
         mainFrame.setLocation(15, 25);
-        mainFrame.setBounds(new Rectangle(250, 250));
+        mainFrame.setBounds(new Rectangle(500, 400));
 
         if(!noChannel && useState) {
             channel.connect(groupName, null, stateTimeout);
@@ -544,7 +563,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
 		 * 
 		 */
 		private static final long serialVersionUID = 1L;
-		protected final Dimension         preferred_size=new Dimension(235, 170);
+		protected final Dimension         preferred_size=new Dimension(500, 400);
         protected Image                   img; // for drawing pixels
         protected Dimension               d, imgsize;
         protected Graphics                gr;
