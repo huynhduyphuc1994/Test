@@ -34,12 +34,13 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 	private JPanel subPanel = null;
 	private DrawPanel drawPanel = null;
 	private JButton clearButton, leaveButton, brushcolor, background, sizeS,
-			sizeT;
+			sizeT, title;
 	private final Random random = new Random(System.currentTimeMillis());
 	private final Font defaultFont = new Font("Helvetica", Font.PLAIN, 12);
+	private JTextField txtgroup;
 	private Color drawColor = selectColor();
 	// private final Color drawColor=Color.black;
-	private static Color backgroundColor = Color.WHITE;
+	private static final Color backgroundColor = Color.WHITE;
 	private static final Streamable comm = null;
 	boolean noChannel = false;
 	boolean jmx;
@@ -256,7 +257,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		int red = Math.abs(random.nextInt()) % 255;
 		int green = Math.abs(random.nextInt()) % 255;
 		int blue = Math.abs(random.nextInt()) % 255;
-		return new Color(red, green, blue);
+		return new Color(red, blue, green);
 	}
 
 	/**
@@ -327,6 +328,22 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		// set change name button
 		leaveButton = new JButton("Leave");// set to Leave not to Exit
 		leaveButton.setFont(defaultFont);
+		title = new JButton("Set Title");
+		title.setFont(defaultFont);
+		title.setFont(defaultFont);
+		title.setForeground(Color.blue);
+		title.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				groupName += channel.getAddress();
+				groupName += " (" + memberSize + ")" + "  GN:  "
+						+ txtgroup.getText();
+				mainFrame.setTitle(groupName);
+			}
+		});
+		txtgroup = new JTextField("", 5);
 		leaveButton.addActionListener(this);
 
 		sizeS = new JButton("+");// set to Leave not to Exit
@@ -340,6 +357,9 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		subPanel.add("South", clearButton);
 		subPanel.add("South", leaveButton);
 		subPanel.add("South", brushcolor);
+		subPanel.add("South", title);
+		subPanel.add("South", txtgroup);
+		txtgroup.setSize(20, 40);
 		subPanel.add("South", sizeS);
 		subPanel.add("South", sizeT);
 
@@ -378,7 +398,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		} else {
 			if (channel.getAddress() != null)
 				tmp += channel.getAddress();
-			tmp += " (" + memberSize + ")";
+			tmp += " (" + memberSize + ")" + "  GN:  ";
 			mainFrame.setTitle(tmp);
 		}
 	}
@@ -519,7 +539,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 			stop();
 		} else if (e.getSource() == sizeS) {
 			brushSize++;
-			
+
 		} else if (e.getSource() == sizeT) {
 			brushSize--;
 		}
@@ -729,7 +749,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		public void mouseDragged(MouseEvent e) {
 			int x = e.getX(), y = e.getY();// not set positon of x for y
 			DrawCommand comm = new DrawCommand(DrawCommand.DRAW, x, y,
-					drawColor.getRGB(), brushSize);
+					drawColor.getRGB());
 
 			if (noChannel) {
 				drawPoint(comm);
@@ -765,6 +785,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 			Color col = new Color(c.rgb);
 			gr.setColor(col);
 			gr.fillOval(c.x, c.y, c.brushSize, c.brushSize);
+			gr.fillOval(c.x, c.y, 10, 10);
 			repaint();
 			if (state != null) {
 				synchronized (state) {
