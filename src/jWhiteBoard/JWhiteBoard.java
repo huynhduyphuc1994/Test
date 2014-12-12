@@ -5,6 +5,7 @@ import org.jgroups.*;
 import org.jgroups.jmx.JmxConfigurator;
 import org.jgroups.stack.AddressGenerator;
 import org.jgroups.util.OneTimeAddressGenerator;
+import org.jgroups.util.Streamable;
 import org.jgroups.util.Util;
 
 import javax.management.MBeanServer;
@@ -30,12 +31,13 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
     private JFrame                 mainFrame=null;
     private JPanel                 subPanel=null;
     private DrawPanel              drawPanel=null;
-    private JButton                clearButton, leaveButton,brushcolor;
+    private JButton                clearButton, leaveButton,brushcolor, background;
     private final Random           random=new Random(System.currentTimeMillis());
     private final Font             defaultFont=new Font("Helvetica",Font.PLAIN,12);
     private Color     		drawColor=selectColor();
     //private final Color            drawColor=Color.black;
-    private static final Color     backgroundColor=Color.WHITE;//Color WHITE not lightGray
+    private static Color     backgroundColor=Color.WHITE;
+    private static final Streamable comm = null;
     boolean                        noChannel=false;
     boolean                        jmx;
     private boolean                useState=false;
@@ -122,6 +124,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
     public void setGroupName(String groupName) {
         if(groupName != null)
             groupName=groupName;
+        groupName=this.groupName;
     }
 
 
@@ -241,7 +244,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
         int red=Math.abs(random.nextInt()) % 255;
         int green=Math.abs(random.nextInt()) % 255;
         int blue=Math.abs(random.nextInt()) % 255;
-        return new Color(red, blue, green);
+        return new Color(red, green, blue);
     }
 
 
@@ -273,6 +276,24 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
         clearButton=new JButton("Clear");//set to Clear not to Clean
         clearButton.setFont(defaultFont);
         clearButton.addActionListener(this);
+        //background color
+        background = new JButton("Display");
+        background.setFont(defaultFont);
+        background.setForeground(Color.BLUE);
+        background.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				Color d = JColorChooser.showDialog(null, "Pick your color", backgroundColor);
+				if(d!= null){
+					backgroundColor = d;
+							mainFrame.setBackground(backgroundColor);
+							mainFrame.setLocation(15,25);
+							mainFrame.setBounds(new Rectangle(250,250));
+				}
+			}
+		});
         //Brush Color
         brushcolor = new JButton("Brush Color");
         brushcolor.setFont(defaultFont);
@@ -297,6 +318,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
         subPanel.add("South", clearButton);
         subPanel.add("South", leaveButton);
         subPanel.add("South",brushcolor);
+        subPanel.add("South", background);
         mainFrame.getContentPane().add("South", subPanel);
         mainFrame.setBackground(backgroundColor);
         clearButton.setForeground(Color.blue);
@@ -337,7 +359,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
     void setTitle() {
         setTitle(null);
     }
-
+   
 
     /**
      * When receive a message, analyze message content and then execute the command: Draw or Clear
@@ -455,6 +477,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener, Chan
             System.err.println(ex);
         }
     }
+   
 
 
     /**
