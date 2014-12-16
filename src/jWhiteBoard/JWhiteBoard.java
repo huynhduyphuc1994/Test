@@ -40,7 +40,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 	private JTextField txtgroup;
 	private Color drawColor = selectColor();
 	// private final Color drawColor=Color.black;
-	private static final Color backgroundColor = Color.WHITE;
+	private static Color backgroundColor = Color.WHITE;
 	private static final Streamable comm = null;
 	boolean noChannel = false;
 	boolean jmx;
@@ -370,7 +370,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		leaveButton.setForeground(Color.blue);
 		mainFrame.pack();
 		mainFrame.setLocation(15, 25);
-		mainFrame.setBounds(new Rectangle(500, 400));
+		mainFrame.setBounds(new Rectangle(900, 400));
 
 		if (!noChannel && useState) {
 			channel.connect(groupName, null, stateTimeout);
@@ -430,6 +430,10 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 				break;
 			case DrawCommand.CLEAR:
 				clearPanel();
+				break;
+			case DrawCommand.TEXT:
+				String receivedTextMessage = comm.textMessage;
+				break;
 			default:
 				System.err.println("***** received invalid draw command "
 						+ comm.mode);
@@ -513,6 +517,22 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 	 */
 	public void sendClearPanelMsg() {
 		DrawCommand comm = new DrawCommand(DrawCommand.CLEAR);
+		try {
+			byte[] buf = Util.streamableToByteBuffer(comm);
+			if (use_unicasts)
+				sendToAll(buf);
+			else
+				channel.send(new Message(null, null, buf));
+		} catch (Exception ex) {
+			System.err.println(ex);
+		}
+	}
+
+	/**
+	 * Send Message command to all members in Group
+	 */
+	public void sendTextMsg(String textMessage) {
+		DrawCommand comm = new DrawCommand(DrawCommand.TEXT,textMessage);
 		try {
 			byte[] buf = Util.streamableToByteBuffer(comm);
 			if (use_unicasts)
