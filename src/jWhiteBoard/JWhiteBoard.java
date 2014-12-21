@@ -532,7 +532,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 	 * Send Message command to all members in Group
 	 */
 	public void sendTextMsg(String textMessage) {
-		DrawCommand comm = new DrawCommand(DrawCommand.TEXT,textMessage);
+		DrawCommand comm = new DrawCommand(DrawCommand.TEXT);
 		try {
 			byte[] buf = Util.streamableToByteBuffer(comm);
 			if (use_unicasts)
@@ -594,7 +594,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		for (Point point : copy.keySet()) {
 			// we don't need the color: it is our draw_color anyway
 			DrawCommand comm = new DrawCommand(DrawCommand.DRAW, point.x,
-					point.y, drawColor.getRGB());
+					drawColor.getRGB(), brushSize);
 			try {
 				byte[] buf = Util.streamableToByteBuffer(comm);
 				if (use_unicasts)
@@ -769,7 +769,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		public void mouseDragged(MouseEvent e) {
 			int x = e.getX(), y = e.getY();// not set positon of x for y
 			DrawCommand comm = new DrawCommand(DrawCommand.DRAW, x, y,
-					drawColor.getRGB());
+					drawColor.getRGB(), brushSize);
 
 			if (noChannel) {
 				drawPoint(comm);
