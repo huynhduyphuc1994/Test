@@ -447,9 +447,9 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 			case DrawCommand.CLEAR:
 				clearPanel();
 				break;
-			case DrawCommand.TEXT:
-				String receivedTextMessage = comm.textMessage;
-				break;
+			//case DrawCommand.TEXT:
+				//String receivedTextMessage = comm.textMessage;
+				//break;
 			default:
 				System.err.println("***** received invalid draw command "
 						+ comm.mode);
@@ -548,7 +548,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 	 * Send Message command to all members in Group
 	 */
 	public void sendTextMsg(String textMessage) {
-		DrawCommand comm = new DrawCommand(DrawCommand.TEXT);
+		//DrawCommand comm = new DrawCommand(DrawCommand.TEXT);
 		try {
 			byte[] buf = Util.streamableToByteBuffer(comm);
 			if (use_unicasts)
