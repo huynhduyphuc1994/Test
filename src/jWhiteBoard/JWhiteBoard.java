@@ -33,12 +33,18 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 	private JFrame mainFrame = null;
 	private JPanel subPanel = null;
 	private DrawPanel drawPanel = null;
+
 	private JButton clearButton, leaveButton, brushcolor, background, sizeS,
-			sizeT;
+			sendMsg, sizeT;
 	JButton btngrname = new JButton("Group Name");
+
+	private JTextField txtMsg, xtGroup;
+	private JTextArea area = new JTextArea("                         			\n");
+
+	private JScrollPane scoll = new JScrollPane(area);
 	private final Random random = new Random(System.currentTimeMillis());
 	private final Font defaultFont = new Font("Helvetica", Font.PLAIN, 12);
-//	private JTextField txtgroup;
+	private JTextField txtgroup;
 	private Color drawColor = selectColor();
 	// private final Color drawColor=Color.black;
 	private static Color backgroundColor = Color.WHITE;
@@ -223,7 +229,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 			whiteBoard = new JWhiteBoard(props, no_channel, jmx, use_state,
 					state_timeout, use_unicasts, name, send_own_state_on_merge,
 					generator);
-			if (group_name == null)
+			if (group_name != null)
 				whiteBoard.setGroupName(group_name);
 			whiteBoard.go();
 		} catch (Throwable e) {
@@ -286,7 +292,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		drawPanel.setBackground(backgroundColor);
 		subPanel = new JPanel();
 		JButton btngrname = new JButton("Group Name");
-		
+
 		mainFrame.getContentPane().add("Center", drawPanel);
 		clearButton = new JButton("Clear");// set to Clear not to Clean
 		clearButton.setFont(defaultFont);
@@ -306,7 +312,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 					backgroundColor = d;
 					mainFrame.setBackground(backgroundColor);
 					mainFrame.setLocation(15, 25);
-					mainFrame.setBounds(new Rectangle(250, 250));
+					mainFrame.setBounds(new Rectangle(800, 400));
 				}
 			}
 		});
@@ -331,10 +337,14 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		// set change name button
 		leaveButton = new JButton("Leave");// set to Leave not to Exit
 		leaveButton.setFont(defaultFont);
-		
-		//txtgroup = new JTextField("", 5);
-		leaveButton.addActionListener(this);
 
+		txtgroup = new JTextField("", 5);
+		leaveButton.addActionListener(this);
+		// Add button sendMsg
+		sendMsg = new JButton("SendMsg");
+		sendMsg.setFont(defaultFont);
+		sendMsg.setForeground(Color.RED);
+		sendMsg.addActionListener(this);
 		sizeS = new JButton("+");// set to Leave not to Exit
 		sizeS.setFont(defaultFont);
 		sizeS.addActionListener(this);
@@ -346,15 +356,18 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		subPanel.add("South", clearButton);
 		subPanel.add("South", leaveButton);
 		subPanel.add("South", brushcolor);
-		
-		//subPanel.add("South", txtgroup);
+		subPanel.add("South", sendMsg);
+		//subPanel.add("South", txtMsg);
+		subPanel.add("South", txtgroup);
 		subPanel.add("South", btngrname);
-		//txtgroup.setSize(20, 40);
+		txtgroup.setSize(20, 40);
+		txtMsg = new JTextField("", 10);
 		subPanel.add("South", sizeS);
 		subPanel.add("South", sizeT);
-
+		txtMsg.setSize(50, 40);
 		subPanel.add("South", background);
 		mainFrame.getContentPane().add("South", subPanel);
+		mainFrame.getContentPane().add("East", scoll);
 		mainFrame.setBackground(backgroundColor);
 		clearButton.setForeground(Color.blue);
 		leaveButton.setForeground(Color.blue);
@@ -363,39 +376,41 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		mainFrame.setLocation(15, 25);
 		mainFrame.setBounds(new Rectangle(900, 400));
 
+		area.setEditable(false);
 		if (!noChannel && useState) {
 			channel.connect(groupName, null, stateTimeout);
 		}
 		mainFrame.setVisible(true);
 		setTitle();
-	
 
-	// da thay doi -state
-	//groupname
-    btngrname.addActionListener(new ActionListener() {
-		
-		public void actionPerformed(ActionEvent arg0) {
-			// TODO Auto-generated method stub
-			String d= JOptionPane.showInputDialog(null, "Please Input Group Name");
-			 if(d==null){
-					JOptionPane.showMessageDialog(null, "Please Input Group Name");
+		// da thay doi -state
+		// groupname
+		btngrname.addActionListener(new ActionListener() {
+
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				String d = JOptionPane.showInputDialog(null,
+						"Please Input Group Name");
+				if (d == null) {
+					JOptionPane.showMessageDialog(null,
+							"Please Input Group Name");
 					channel.disconnect();
-			 }
-			 groupName=d;
-			 if(!noChannel && !useState)
-				 try {
-					channel.disconnect();
-					channel.connect(groupName);
-				} catch (Exception e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
 				}
-			 System.out.println(groupName);
-			 setTitle(groupName);
-		
-		}
-	});
-}
+				groupName = d;
+				if (!noChannel && !useState)
+					try {
+						channel.disconnect();
+						channel.connect(groupName);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+				System.out.println(groupName);
+				setTitle(groupName);
+
+			}
+		});
+	}
 
 	/**
 	 * Set Frame's title
@@ -447,9 +462,10 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 			case DrawCommand.CLEAR:
 				clearPanel();
 				break;
-			//case DrawCommand.TEXT:
-				//String receivedTextMessage = comm.textMessage;
-				//break;
+			case DrawCommand.TEXT:
+				String receivedTextMessage = comm.textMessage;
+				area.append(receivedTextMessage + "\n");
+				break;
 			default:
 				System.err.println("***** received invalid draw command "
 						+ comm.mode);
@@ -531,7 +547,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 	/**
 	 * Send Clear command to all members in Group
 	 */
-	public void sendClearPanelMsg() {
+	public void rPanelMsg() {
 		DrawCommand comm = new DrawCommand(DrawCommand.CLEAR);
 		try {
 			byte[] buf = Util.streamableToByteBuffer(comm);
@@ -545,10 +561,10 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 	}
 
 	/**
-	 * Send Message command to all members in Group
+	 * Send MESSAGE command to all members in Group
 	 */
 	public void sendTextMsg(String textMessage) {
-		//DrawCommand comm = new DrawCommand(DrawCommand.TEXT);
+		DrawCommand comm = new DrawCommand(DrawCommand.TEXT, textMessage);
 		try {
 			byte[] buf = Util.streamableToByteBuffer(comm);
 			if (use_unicasts)
@@ -561,7 +577,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 	}
 
 	/**
-	 * Action when click [Clear] or [Leave] button
+	 * /** Action when click [Clear] or [Leave] button
 	 */
 	public void actionPerformed(ActionEvent e) {
 		String command = e.getActionCommand();
@@ -570,7 +586,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 				clearPanel();
 				return;
 			}
-			sendClearPanelMsg();
+			rPanelMsg();
 		} else if ("Leave".equals(command)) {
 			stop();
 		} else if (e.getSource() == sizeS) {
@@ -578,8 +594,15 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 
 		} else if (e.getSource() == sizeT) {
 			brushSize--;
+		} else if (e.getSource() == sendMsg) {
+			sendTextMsg(txtMsg.getText());
 		}
 		System.out.println("Unknown action");
+	}
+
+	private void functionSetTitle() {
+		// TODO Auto-generated method stub
+
 	}
 
 	/**
