@@ -34,10 +34,11 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 	private JPanel subPanel = null;
 	private DrawPanel drawPanel = null;
 	private JButton clearButton, leaveButton, brushcolor, background, sizeS,
-			sizeT, title;
+			sizeT;
+	JButton btngrname = new JButton("Group Name");
 	private final Random random = new Random(System.currentTimeMillis());
 	private final Font defaultFont = new Font("Helvetica", Font.PLAIN, 12);
-	private JTextField txtgroup;
+//	private JTextField txtgroup;
 	private Color drawColor = selectColor();
 	// private final Color drawColor=Color.black;
 	private static Color backgroundColor = Color.WHITE;
@@ -284,6 +285,8 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		drawPanel = new DrawPanel(useState);
 		drawPanel.setBackground(backgroundColor);
 		subPanel = new JPanel();
+		JButton btngrname = new JButton("Group Name");
+		
 		mainFrame.getContentPane().add("Center", drawPanel);
 		clearButton = new JButton("Clear");// set to Clear not to Clean
 		clearButton.setFont(defaultFont);
@@ -328,22 +331,8 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		// set change name button
 		leaveButton = new JButton("Leave");// set to Leave not to Exit
 		leaveButton.setFont(defaultFont);
-		title = new JButton("Set Title");
-		title.setFont(defaultFont);
-		title.setFont(defaultFont);
-		title.setForeground(Color.blue);
-		title.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				groupName += channel.getAddress();
-				groupName += " (" + memberSize + ")" + "  GN:  "
-						+ txtgroup.getText();
-				mainFrame.setTitle(groupName);
-			}
-		});
-		txtgroup = new JTextField("", 5);
+		
+		//txtgroup = new JTextField("", 5);
 		leaveButton.addActionListener(this);
 
 		sizeS = new JButton("+");// set to Leave not to Exit
@@ -357,9 +346,10 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		subPanel.add("South", clearButton);
 		subPanel.add("South", leaveButton);
 		subPanel.add("South", brushcolor);
-		subPanel.add("South", title);
-		subPanel.add("South", txtgroup);
-		txtgroup.setSize(20, 40);
+		
+		//subPanel.add("South", txtgroup);
+		subPanel.add("South", btngrname);
+		//txtgroup.setSize(20, 40);
 		subPanel.add("South", sizeS);
 		subPanel.add("South", sizeT);
 
@@ -368,6 +358,7 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		mainFrame.setBackground(backgroundColor);
 		clearButton.setForeground(Color.blue);
 		leaveButton.setForeground(Color.blue);
+		btngrname.setForeground(Color.blue);
 		mainFrame.pack();
 		mainFrame.setLocation(15, 25);
 		mainFrame.setBounds(new Rectangle(900, 400));
@@ -377,9 +368,34 @@ public class JWhiteBoard extends ReceiverAdapter implements ActionListener,
 		}
 		mainFrame.setVisible(true);
 		setTitle();
-	}
+	
 
 	// da thay doi -state
+	//groupname
+    btngrname.addActionListener(new ActionListener() {
+		
+		public void actionPerformed(ActionEvent arg0) {
+			// TODO Auto-generated method stub
+			String d= JOptionPane.showInputDialog(null, "Please Input Group Name");
+			 if(d==null){
+					JOptionPane.showMessageDialog(null, "Please Input Group Name");
+					channel.disconnect();
+			 }
+			 groupName=d;
+			 if(!noChannel && !useState)
+				 try {
+					channel.disconnect();
+					channel.connect(groupName);
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			 System.out.println(groupName);
+			 setTitle(groupName);
+		
+		}
+	});
+}
 
 	/**
 	 * Set Frame's title
